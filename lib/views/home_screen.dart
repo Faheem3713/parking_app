@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:parking/controllers/auth_controller.dart';
 import 'package:parking/controllers/parking_controller.dart';
-import 'package:parking/core/helpers/gap.dart';
+import 'package:parking/core/helpers/routing_helper.dart';
+import 'package:parking/core/widgets/alert_dialog.dart';
+import 'package:parking/core/widgets/gap.dart';
 import 'package:parking/core/widgets/bottom_sheet.dart';
 import 'package:parking/views/history_screen.dart';
 import 'package:parking/views/login_screen.dart';
@@ -29,15 +31,7 @@ class HomeScreen extends StatelessWidget {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.logout),
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                        (route) => false);
-                  },
+                  onPressed: () => _logOut(context),
                 ),
               ],
               floating: true,
@@ -58,12 +52,7 @@ class HomeScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   context.read<ParkingController>().getHistory(user.id!);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HistoryScreen(),
-                    ),
-                  );
+                  context.push(const HistoryScreen());
                 },
                 child: const Text('View Full History'),
               ),
@@ -97,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                                       .manageSlots(
                                           int.tryParse(slotController.text) ??
                                               0);
-                                  Navigator.pop(context);
+                                  context.pop();
                                 },
                                 child: const Text('Submit'),
                               ),
@@ -113,6 +102,31 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _logOut(BuildContext context) {
+    cAlertDialog(
+      context: context,
+      message: 'Are you sure you want to log out?',
+      action: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                context.pushAndRemoveUntil(const LoginScreen());
+              },
+              child: const Text('Yes'),
+            ),
+            TextButton(
+              onPressed: () => context.pop(),
+              child: const Text('No'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

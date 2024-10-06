@@ -14,18 +14,25 @@ class AuthController extends ChangeNotifier {
   }
 
   Future<void> registerUser(UserModel user) async {
-    await ErrorHelper.handleError(_authServices.createUser(user));
+    await ErrorHelper.handleError(() async {
+      await _authServices.createUser(user);
+      saveUser();
+    });
   }
 
   Future<void> loginUser(UserModel user) async {
-    await ErrorHelper.handleError(_authServices.login(user));
+    await ErrorHelper.handleError(() async {
+      await _authServices.login(user);
+      await saveUser();
+    });
   }
 
   Future<void> logOut() async {
-    await ErrorHelper.handleError(_authServices.logOut());
+    await ErrorHelper.handleError(() => _authServices.logOut());
   }
 
-  void saveUser(User user) {
-    userData = UserModel(email: user.email, id: user.uid);
+  Future<void> saveUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    userData = UserModel(email: user?.email, id: user?.uid);
   }
 }

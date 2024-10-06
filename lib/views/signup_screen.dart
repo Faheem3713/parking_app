@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:parking/controllers/auth_controller.dart';
-import 'package:parking/core/helpers/alert_dialog.dart';
-import 'package:parking/core/helpers/gap.dart';
+import 'package:parking/core/helpers/routing_helper.dart';
+import 'package:parking/core/widgets/alert_dialog.dart';
+import 'package:parking/core/widgets/gap.dart';
 import 'package:parking/core/helpers/validator.dart';
 import 'package:parking/models/auth_model.dart';
 import 'package:parking/views/home_screen.dart';
@@ -60,11 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       await cAlertDialog(
                           context: context,
                           message: 'Account Successfully Created');
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ));
+                      context.pushAndRemoveUntil(const HomeScreen());
                     }
                   },
                   child: const Text('Sign Up'))

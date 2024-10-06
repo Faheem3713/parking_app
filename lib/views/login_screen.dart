@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:parking/controllers/auth_controller.dart';
-import 'package:parking/core/helpers/gap.dart';
+import 'package:parking/core/helpers/routing_helper.dart';
+import 'package:parking/core/widgets/gap.dart';
 import 'package:parking/core/helpers/validator.dart';
 import 'package:parking/models/auth_model.dart';
 import 'package:parking/views/home_screen.dart';
@@ -66,22 +67,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       await context.read<AuthController>().loginUser(UserModel(
                           email: _emailController.text,
                           password: _passwordController.text));
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ));
+                      context.pushAndRemoveUntil(const HomeScreen());
                     }
                   },
                   child: const Text('Login')),
               TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignUpScreen(),
-                        ));
-                  },
+                  onPressed: () => context.push(const SignUpScreen()),
                   child: const Text('Create an Account'))
             ],
           ),

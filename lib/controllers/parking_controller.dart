@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:parking/core/helpers/error_helper.dart'; // Assuming this handles errors and loading states
-import 'package:parking/core/helpers/logger.dart';
+import 'package:parking/core/helpers/error_helper.dart';
 import 'package:parking/models/history_model.dart';
 import 'package:parking/models/parking_model.dart';
 import 'package:parking/services/parking_services.dart';
@@ -16,11 +15,12 @@ class ParkingController extends ChangeNotifier {
   }
 
   Future<void> manageSlots(int numberOfSlots) async {
-    await ErrorHelper.handleError(_parkingServices.manageSlots(numberOfSlots));
+    await ErrorHelper.handleError(
+        () => _parkingServices.manageSlots(numberOfSlots));
   }
 
   Future<void> bookSlot(Parking data) async {
-    await ErrorHelper.handleError(_parkingServices.bookSlot(data));
+    await ErrorHelper.handleError(() => _parkingServices.bookSlot(data));
   }
 
   Future<void> getHistory(String id) async {
@@ -39,15 +39,5 @@ class ParkingController extends ChangeNotifier {
         _parkingServices.saveHistory(historyData)
       ]);
     });
-  }
-
-  Stream<List<Parking>> getData() async* {
-    try {
-      await for (final data in _parkingServices.getData()) {
-        yield data;
-      }
-    } catch (e) {
-      printLog(e);
-    }
   }
 }

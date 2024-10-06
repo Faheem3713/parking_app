@@ -1,5 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:parking/core/helpers/logger.dart';
+import 'package:parking/core/helpers/ui_helpers.dart';
+import 'package:parking/core/widgets/alert_dialog.dart';
 import 'package:parking/models/history_model.dart';
 import 'package:parking/models/parking_model.dart';
 
@@ -56,11 +59,17 @@ class ParkingServices {
     final Stream<DatabaseEvent> stream = ref.onValue;
 
     await for (final event in stream) {
-      final parkData = (event.snapshot.value as List)
-          .map((e) => Parking.fromJson(e as Map))
-          .toList();
+      try {
+        final parkData = (event.snapshot.value as List)
+            .map((e) => Parking.fromJson(e as Map))
+            .toList();
 
-      yield parkData;
+        yield parkData;
+      } on FirebaseException catch (e) {
+        cAlertDialog(context: currentContext, message: '${e.message}');
+      } catch (e) {
+        printLog('Error parsing data: $e');
+      }
     }
   }
 }

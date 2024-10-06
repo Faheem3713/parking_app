@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parking/controllers/auth_controller.dart';
 import 'package:parking/controllers/parking_controller.dart';
-import 'package:parking/core/helpers/alert_dialog.dart';
-import 'package:parking/core/helpers/gap.dart';
-import 'package:parking/core/helpers/logger.dart';
+import 'package:parking/core/helpers/routing_helper.dart';
+import 'package:parking/core/widgets/alert_dialog.dart';
+import 'package:parking/core/widgets/gap.dart';
 import 'package:parking/core/widgets/bottom_sheet.dart';
 import 'package:parking/models/history_model.dart';
 import 'package:parking/models/parking_model.dart';
@@ -13,63 +13,57 @@ import 'package:provider/provider.dart';
 void showReservationDetailsBottomSheet(BuildContext context, Parking parking) {
   final String parkingTime = DateFormat('hh:mm a').format(parking.time!);
   final user = context.read<AuthController>().userData;
+
   cShowModalBottomSheet(
-      context: context,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Reservation Details',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+    context: context,
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Reservation Details',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-            const VGap(16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Name :', style: TextStyle(fontSize: 16)),
-                Text(parking.name ?? '', style: const TextStyle(fontSize: 16)),
-              ],
+          ), // Title
+          const VGap(16),
+          _buildDetailRow('Name:', parking.name ?? ''), // Name
+          const VGap(16),
+          _buildDetailRow('Entry Time:', parkingTime), // Entry Time
+          const VGap(16),
+          _buildDetailRow(
+              'Slot Number:', (parking.slotNo! + 1).toString()), // Slot Number
+          const VGap(24),
+          if (user.id == parking.id)
+            ElevatedButton(
+              onPressed: () async {
+                context.pop();
+                await _calculateAndShowParkingFee(context, parking);
+              },
+              child: const Text('Exit'),
             ),
-            const VGap(16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Entry Time:', style: TextStyle(fontSize: 16)),
-                Text(parkingTime, style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-            const VGap(16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Slot Number:', style: TextStyle(fontSize: 16)),
-                Text((parking.slotNo! + 1).toString(),
-                    style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-            const VGap(24),
-            if (user.id == parking.id)
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  try {
-                    await _calculateAndShowParkingFee(context, parking);
-                    printLog('adsfas');
-                  } catch (e) {
-                    printLog(e);
-                    rethrow;
-                  }
-                },
-                child: const Text('Exit'),
-              ),
-          ],
-        ),
-      ));
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildDetailRow(String label, String value) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(
+        label,
+        style: const TextStyle(fontSize: 16),
+      ),
+      Text(
+        value,
+        style: const TextStyle(fontSize: 16),
+      ),
+    ],
+  );
 }
 
 Future<void> _calculateAndShowParkingFee(
@@ -116,7 +110,7 @@ Future<void> _calculateAndShowParkingFee(
                     .deleteSlot(parking, history);
                 await cAlertDialog(
                     context: context, message: 'Paid Successfully');
-                Navigator.pop(context);
+                context.pop();
               },
               child: const Text('Pay and Exit'),
             ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:parking/core/helpers/logger.dart';
+import 'package:parking/core/helpers/routing_helper.dart';
 
 bool _dialogOpen = false;
 
-Future<T?> cAlertDialog<T>({
-  required BuildContext context,
-  required String message,
-}) {
+Future<T?> cAlertDialog<T>(
+    {required BuildContext context,
+    required String message,
+    List<Widget>? action}) {
   if (_dialogOpen) {
     printLog('multi Dialog');
     return Future.value();
@@ -27,12 +28,13 @@ Future<T?> cAlertDialog<T>({
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 15),
         ),
-        actions: [
-          TextButton(
-            child: const Text('Close'),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
+        actions: action ??
+            [
+              TextButton(
+                child: const Text('Close'),
+                onPressed: () => context.pop(),
+              ),
+            ],
       );
     },
   ).then((value) {

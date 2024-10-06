@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:parking/controllers/auth_controller.dart';
+import 'package:parking/core/helpers/routing_helper.dart';
 import 'package:parking/views/home_screen.dart';
 import 'package:parking/views/login_screen.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +16,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      checkLogin();
-    });
+    checkLogin();
     super.initState();
   }
 
@@ -32,22 +31,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void checkLogin() async {
     final user = FirebaseAuth.instance.currentUser?.uid;
-    if (user == null) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ));
-    } else {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ));
-    }
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user != null) {
-        context.read<AuthController>().saveUser(user);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (user == null) {
+        context.pushAndRemoveUntil(const LoginScreen());
+      } else {
+        context.read<AuthController>().saveUser();
+        context.pushAndRemoveUntil(const HomeScreen());
       }
     });
   }

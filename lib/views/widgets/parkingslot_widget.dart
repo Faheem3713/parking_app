@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:parking/controllers/auth_controller.dart';
-import 'package:parking/controllers/parking_controller.dart';
+import 'package:parking/services/parking_services.dart';
 import 'package:parking/views/widgets/reserved_details_bottomsheet.dart';
 import 'package:parking/views/widgets/slot_details_bottomsheet.dart';
-import 'package:provider/provider.dart';
 
 class ParkingSlotsWidget extends StatelessWidget {
   const ParkingSlotsWidget({
@@ -11,9 +9,8 @@ class ParkingSlotsWidget extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final parkingController = context.read<ParkingController>();
     return StreamBuilder(
-        stream: parkingController.getData(),
+        stream: ParkingServices().getData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return SliverGrid(

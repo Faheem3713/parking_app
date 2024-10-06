@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:parking/controllers/auth_controller.dart';
 import 'package:parking/controllers/parking_controller.dart';
-import 'package:parking/core/helpers/alert_dialog.dart';
-import 'package:parking/core/helpers/gap.dart';
+import 'package:parking/core/helpers/routing_helper.dart';
+import 'package:parking/core/widgets/alert_dialog.dart';
+import 'package:parking/core/widgets/gap.dart';
 import 'package:parking/core/widgets/bottom_sheet.dart';
 import 'package:parking/models/parking_model.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,7 @@ Future<void> slotDetailsBottomsheet(BuildContext context, int slotNo) async {
                 if (context.mounted) {
                   await cAlertDialog(
                       context: context, message: 'Successfully booked');
-                  Navigator.pop(context);
+                  context.pop();
                 }
               },
               child: const Text('Confirm'),
